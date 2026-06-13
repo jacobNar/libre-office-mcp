@@ -12,16 +12,9 @@ try:
 except Exception:
     pass
 
-try:
-    import uno
-    from com.sun.star.awt import Point, Size
-    from com.sun.star.beans import PropertyValue
-except ImportError:
-    uno = None
-    Point = None
-    Size = None
-    PropertyValue = None
-
+import uno
+from com.sun.star.awt import Point, Size
+from com.sun.star.beans import PropertyValue
 from config import AppConfig
 
 class LibreOfficeDrawClient:
@@ -33,8 +26,6 @@ class LibreOfficeDrawClient:
         self.document = None
 
     def get_uno_context(self):
-        if uno is None:
-            raise ImportError("UNO module is not available in this environment. Please run this code on the Raspberry Pi or install LibreOffice locally.")
         if self.context is None:
             local_context = uno.getComponentContext()
             resolver = local_context.ServiceManager.createInstanceWithContext(

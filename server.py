@@ -33,4 +33,4 @@ connect_entities.__doc__ = "Connect two entities using a connector shape with a 
 save_and_export_vsdx.__doc__ = "Save and export the drawing canvas as a VSDX/Visio document to the remote file path."
 
 if __name__ == "__main__":
-    mcp.run(transport="sse", host="0.0.0.0", port=8000)
+    mcp.run()
