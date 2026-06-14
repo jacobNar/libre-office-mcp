@@ -86,23 +86,28 @@ sudo soffice "--accept=socket,host=localhost,port=2002;urp;" --headless --norest
 *(Make sure the host IP in [config.py](config.py) matches the listener host).*
 
 ### 2. Run the MCP Server
-To test and run the server using `stdio` communication:
+To run the server over a network port using the Server-Sent Events (SSE) transport:
 
 ```bash
 python server.py
 ```
+*This starts the server process listening on port `8000`. The server endpoint will be available at `http://<host-ip>:8000/sse`.*
 
-### 3. Integrate with an MCP Client (e.g., Claude Desktop)
-To use this server in Claude Desktop, add it to your `claude_desktop_config.json` file:
+### 3. Connect to the MCP Server Remotely
+From your other computer on the Tailscale network, you can connect to the running MCP server by pointing your client application to the SSE URL:
+
+```text
+http://<Tailscale-IP>:8000/sse
+```
+
+For example, you can configure the remote server in your client's configuration file (such as `claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
     "libreoffice-draw": {
-      "command": "/absolute/path/to/project/.venv/bin/python",
-      "args": ["/absolute/path/to/project/server.py"]
+      "url": "http://<Tailscale-IP>:8000/sse"
     }
   }
 }
 ```
-*(On Windows, use the path to `.venv\Scripts\python.exe` and the absolute path to `server.py`).*
