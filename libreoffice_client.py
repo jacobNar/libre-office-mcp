@@ -52,6 +52,16 @@ class LibreOfficeDrawClient:
         return self.document
 
     def draw_erd_entity(self, name: str, attributes: list[str], x: int, y: int, width: int = 4000, height: int = 3000):
+        if x < 1000:
+            x = x * 100
+        if y < 1000:
+            y = y * 100
+        if width < 1000:
+            width = width * 100
+        if height < 1000:
+            height = height * 100
+        width = max(width, 3500)
+        height = max(height, 2000)
         doc = self.get_active_document()
         draw_page = doc.getDrawPages().getByIndex(0)
         shape = doc.createInstance("com.sun.star.drawing.RectangleShape")
