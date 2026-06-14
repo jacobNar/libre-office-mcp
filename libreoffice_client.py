@@ -43,7 +43,20 @@ class LibreOfficeDrawClient:
         self.document = self.desktop.loadComponentFromURL(
             "private:factory/sdraw", "_blank", 0, ()
         )
+        self.set_page_size(42000, 29700)
         return self.document
+
+    def set_page_size(self, width: int, height: int):
+        doc = self.get_active_document()
+        page_styles = doc.getStyleFamilies().getByName("PageStyles")
+        for name in page_styles.getElementNames():
+            style = page_styles.getByName(name)
+            try:
+                style.setPropertyValue("Width", width)
+                style.setPropertyValue("Height", height)
+                style.setPropertyValue("IsLandscape", True)
+            except Exception:
+                pass
 
     def get_active_document(self):
         if self.document is None:
