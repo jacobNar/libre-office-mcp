@@ -67,12 +67,12 @@ class LibreOfficeDrawClient:
     def find_shape_by_entity_name(self, name: str):
         doc = self.get_active_document()
         draw_page = doc.getDrawPages().getByIndex(0)
-        target = f"[{name}]"
+        target = f"[{name.strip().lower()}]"
         for i in range(draw_page.getCount()):
             shape = draw_page.getByIndex(i)
             if hasattr(shape, "String"):
                 lines = shape.String.split("\n")
-                if lines and lines[0] == target:
+                if lines and lines[0].strip().lower() == target:
                     return shape
         return None
 
@@ -82,7 +82,12 @@ class LibreOfficeDrawClient:
         from_shape = self.find_shape_by_entity_name(from_entity_name)
         to_shape = self.find_shape_by_entity_name(to_entity_name)
         if from_shape is None or to_shape is None:
-            raise ValueError("Start or End shape not found")
+            missing = []
+            if from_shape is None:
+                missing.append(from_entity_name)
+            if to_shape is None:
+                missing.append(to_entity_name)
+            return f"Error: Start or End shape not found for: {', '.join(missing)}. Please draw them first."
         connector = doc.createInstance("com.sun.star.drawing.ConnectorShape")
         draw_page.add(connector)
         connector.StartShape = from_shape

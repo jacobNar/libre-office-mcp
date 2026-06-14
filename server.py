@@ -19,7 +19,9 @@ def draw_erd_entity(name: str, attributes: list[str], x: int, y: int, width: int
 
 @mcp.tool()
 def connect_entities(from_entity_name: str, to_entity_name: str, cardinality: str):
-    client.connect_entities(from_entity_name, to_entity_name, cardinality)
+    res = client.connect_entities(from_entity_name, to_entity_name, cardinality)
+    if isinstance(res, str) and res.startswith("Error"):
+        return res
     return f"Connected '{from_entity_name}' to '{to_entity_name}' with cardinality '{cardinality}'."
 
 @mcp.tool()
