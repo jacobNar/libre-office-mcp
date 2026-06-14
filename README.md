@@ -78,10 +78,10 @@ Launch LibreOffice locally with a socket listener on port `2002`:
 
 ```bash
 # On Linux/macOS
-sudo soffice "--accept=socket,host=localhost,port=2002;urp;" --headless --norestore --nologo --nodefault
+sudo soffice "--accept=socket,host=127.0.0.1,port=2002;urp;" --headless --norestore --nologo --nodefault
 
 # On Windows
-& "C:\Program Files\LibreOffice\program\soffice.exe" "--accept=socket,host=localhost,port=2002;urp;" --headless --norestore --nologo --nodefault
+& "C:\Program Files\LibreOffice\program\soffice.exe" "--accept=socket,host=127.0.0.1,port=2002;urp;" --headless --norestore --nologo --nodefault
 ```
 *(Make sure the host IP in [config.py](config.py) matches the listener host).*
 

@@ -23,14 +23,14 @@ def connect_entities(from_entity_name: str, to_entity_name: str, cardinality: st
     return f"Connected '{from_entity_name}' to '{to_entity_name}' with cardinality '{cardinality}'."
 
 @mcp.tool()
-def save_and_export_vsdx(output_filename: str):
-    client.save_and_export_vsdx(output_filename)
-    return f"Saved and exported to '{output_filename}'."
+def save_as_odg(output_filename: str):
+    client.save_as_odg(output_filename)
+    return f"Saved to '{output_filename}'."
 
 init_new_draw_document.__doc__ = "Initialize a new LibreOffice Draw document."
 draw_erd_entity.__doc__ = "Draw an ERD entity table shape with its name, attributes, coordinates, and dimensions."
 connect_entities.__doc__ = "Connect two entities using a connector shape with a specified cardinality."
-save_and_export_vsdx.__doc__ = "Save and export the drawing canvas as a VSDX/Visio document to the remote file path."
+save_as_odg.__doc__ = "Save the drawing canvas as a native LibreOffice Draw (.odg) document."
 
 if __name__ == "__main__":
     mcp.run(transport="sse", host="0.0.0.0", port=8000)

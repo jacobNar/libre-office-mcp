@@ -91,10 +91,11 @@ class LibreOfficeDrawClient:
             connector.setPropertyValue("EdgeLineEndName", "Arrow")
         return connector
 
-    def save_and_export_vsdx(self, output_filename: str):
+    def save_as_odg(self, output_filename: str):
+        import uno
+        import os
+        base, _ = os.path.splitext(output_filename)
+        output_filename = base + ".odg"
         doc = self.get_active_document()
         output_url = uno.systemPathToFileUrl(output_filename)
-        prop = PropertyValue()
-        prop.Name = "FilterName"
-        prop.Value = "Visio Document"
-        doc.storeToURL(output_url, (prop,))
+        doc.storeToURL(output_url, ())
