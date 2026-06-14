@@ -1,23 +1,38 @@
+import asyncio
+import os
 import sys
+from dotenv import load_dotenv
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_ollama import ChatOllama
 from langgraph.prebuilt import create_react_agent
-from server import init_new_draw_document, draw_erd_entity, connect_entities, save_and_export_vsdx
 from logger import LLMInteractionLogger
-from config import AppConfig
 
 class ERDAgent:
     def __init__(self):
-        self.llm = ChatOllama(model=AppConfig.OLLAMA_MODEL)
-        self.tools = [init_new_draw_document, draw_erd_entity, connect_entities, save_and_export_vsdx]
+        load_dotenv()
+        self.server_url = os.getenv("MCP_SERVER_URL", "http://localhost:8000/sse")
+        self.model_name = os.getenv("OLLAMA_MODEL", "gemma4-agent:latest")
+        self.ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+        self.llm = ChatOllama(model=self.model_name, base_url=self.ollama_base_url)
         self.system_prompt = "You are an expert database design assistant. Use your tools to create ERD tables and connect them. Arrange them nicely using coordinate offsets so they do not overlap."
-        self.agent_executor = create_react_agent(self.llm, tools=self.tools, state_modifier=self.system_prompt)
         self.logger = LLMInteractionLogger()
 
-    def run(self, prompt: str):
+    async def run(self, prompt: str):
         self.logger.log_interaction("system", self.system_prompt)
         self.logger.log_interaction("user", prompt)
-        for event in self.agent_executor.stream({"messages": [("user", prompt)]}):
-            for node_name, node_state in event.items():
+        client = MultiServerMCPClient({
+            "libreoffice_draw_erd": {
+                "transport": "sse",
+                "url": self.server_url
+            }
+        })
+        tools = await client.get_tools()
+        print("Successfully loaded tools from remote MCP:")
+        for tool in tools:
+            print(f" - {tool.name}: {tool.description}")
+        agent_executor = create_react_agent(self.llm, tools=tools, prompt=self.system_prompt)
+        async for chunk in agent_executor.astream({"messages": [("user", prompt)]}):
+            for node_name, node_state in chunk.items():
                 messages = node_state.get("messages", [])
                 for message in messages:
                     message.pretty_print()
@@ -28,21 +43,22 @@ class ERDAgent:
                         tool_calls
                     )
 
-    def start_repl(self):
+    async def start_repl(self):
         while True:
             try:
-                prompt = input("ERD Agent> ")
+                prompt = await asyncio.to_thread(input, "ERD Agent> ")
                 if not prompt.strip():
                     continue
                 if prompt.strip().lower() in ("exit", "quit"):
                     break
-                self.run(prompt)
+                await self.run(prompt)
             except KeyboardInterrupt:
                 break
 
-if __name__ == "__main__":
+async def main():
     agent = ERDAgent()
-    if len(sys.argv) > 1:
-        agent.run(" ".join(sys.argv[1:]))
-    else:
-        agent.start_repl()
+    prompt = """ your prompt here """
+    await agent.run(prompt)
+
+if __name__ == "__main__":
+    asyncio.run(main())
