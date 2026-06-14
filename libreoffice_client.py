@@ -102,8 +102,21 @@ class LibreOfficeDrawClient:
         draw_page.add(connector)
         connector.StartShape = from_shape
         connector.EndShape = to_shape
-        if cardinality == "one-to-many":
-            connector.setPropertyValue("EdgeLineEndName", "Arrow")
+        card = cardinality.strip().lower()
+        if "many-to-many" in card or "many to many" in card or "m:n" in card or "m-n" in card:
+            connector.setPropertyValue("LineStartName", "Arrow")
+            connector.setPropertyValue("LineEndName", "Arrow")
+            connector.String = "M:N"
+        elif "one-to-many" in card or "one to many" in card or "1:n" in card or "1:m" in card or "1-n" in card:
+            connector.setPropertyValue("LineEndName", "Arrow")
+            connector.String = "1:N"
+        elif "many-to-one" in card or "many to one" in card or "n:1" in card or "m:1" in card or "n-1" in card:
+            connector.setPropertyValue("LineStartName", "Arrow")
+            connector.String = "N:1"
+        elif "one-to-one" in card or "one to one" in card or "1:1" in card or "1-1" in card:
+            connector.String = "1:1"
+        else:
+            connector.String = cardinality
         return connector
 
     def save_as_odg(self, output_filename: str):

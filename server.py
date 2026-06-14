@@ -31,7 +31,7 @@ def save_as_odg(output_filename: str):
 
 init_new_draw_document.__doc__ = "Initialize a new LibreOffice Draw document."
 draw_erd_entity.__doc__ = "Draw an ERD entity table shape. Coordinates (x, y) and dimensions (width, height) are in 1/100ths of a mm (e.g. x=5000, y=8000, width=4000, height=3000). Values < 1000 will be auto-scaled by 100."
-connect_entities.__doc__ = "Connect two entities using a connector shape with a specified cardinality."
+connect_entities.__doc__ = "Connect two entities using a connector shape. Possible cardinality values include: '1:1' (one-to-one), '1:N' or '1:M' (one-to-many), 'N:1' or 'M:1' (many-to-one), and 'M:N' (many-to-many), which determine arrowheads and line labels."
 save_as_odg.__doc__ = "Save the drawing canvas as a native LibreOffice Draw (.odg) document."
 
 if __name__ == "__main__":
